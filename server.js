@@ -12,6 +12,6 @@ app.use(async(ctx, next) => {
         ctx.body = fs.createReadStream('./frontend/index.html');
     }
 })
-app.use(mount('./frontend/static', serve('/static')))
+app.use(mount('/static', serve('./frontend/static')))
 
-app.listen(8000)
+app.listen(8000, "127.0.0.1")
