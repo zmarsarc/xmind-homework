@@ -1,8 +1,9 @@
 import Dashbroad from './views/dashbroad.js'
+import Month from './views/month.js'
 
 const routers = [
     {path: "/dashbroad", view: Dashbroad},
-    {path: "/month", view: () => console.log('view month')}
+    {path: "/month", view: Month}
 ]
 
 async function route() {
