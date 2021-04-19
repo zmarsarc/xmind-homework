@@ -1,0 +1,64 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+.header-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: gray;
+}
+
+.header-container .nav {
+    display: inline-block;
+}
+
+.header-container .nav .nav-tab {
+    color: white;
+    display: inline-block;
+    font-size: 28px; 
+    text-decoration: none;
+    padding: 8px 12px;
+}
+
+.header-container .nav .nav-tab:hover {
+    background-color: black;
+}
+
+.header-container .header-tools {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    height: 53px;
+    margin: 0px;
+    padding: 0px;
+}
+
+
+.header-container .ipt-search,
+.header-container .btn-add-one,
+.header-container .btn-user-profile {
+    box-sizing: border-box;
+    height: 37px;
+    margin: 8px 0px;
+    display: inline-block;
+    outline: none;
+    border: none;
+    margin-right: 6px;
+}
+
+.header-container .ipt-search {
+    border-radius: 20px;
+    padding: 0px 5px;
+}
+
+.header-container .btn-user-profile {
+    border-radius: 50%;
+    width: 37px;
+}
+
+.app {
+    margin-top: 55px;
+}
