@@ -1,0 +1,35 @@
+.month-view-container {
+    box-sizing: border-box;
+    width: 98%;
+    margin: 0px 1%;
+}
+
+#month-overview section {
+    display: inline-block;
+}
+
+.month-input-counter label,
+.month-output-counter label {
+    font-size: 36px;
+    font-weight: 500;
+}
+
+#month-input-value, #month-output-value {
+    font-size: 72px;
+    font-weight: 800;
+}
+
+.month-ledger,
+.month-ledger th,
+.month-ledger td {
+    border: 1px solid #000;
+}
+
+.month-ledger {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.month-ledger thead {
+    text-align: center;
+}
