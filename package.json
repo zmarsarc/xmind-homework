@@ -1,0 +1,33 @@
+{
+  "name": "xmind-homework",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "run": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zmarsarc/xmind-homework.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zmarsarc/xmind-homework/issues"
+  },
+  "homepage": "https://github.com/zmarsarc/xmind-homework#readme",
+  "dependencies": {
+    "koa": "^2.13.1",
+    "koa-mount": "^4.0.0",
+    "koa-static": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.1",
+    "@types/koa-mount": "^4.0.0",
+    "@types/koa-static": "^4.0.1"
+  }
+}
