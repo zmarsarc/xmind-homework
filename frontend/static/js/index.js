@@ -1,9 +1,11 @@
+import Dashbroad from './views/dashbroad.js'
+
 const routers = [
-    {path: "/dashbroad", view: () => console.log("view dashbroad")},
+    {path: "/dashbroad", view: Dashbroad},
     {path: "/month", view: () => console.log('view month')}
 ]
 
-function route() {
+async function route() {
     const protentialMatches = routers.map(r => {
         return {
             router: r,
@@ -18,9 +20,25 @@ function route() {
             isMatch: true
         }
     }
-    
-    const view = matched.router.view;
-    view();
+
+    const view = new matched.router.view();
+
+    // 加载视图
+    const html = await view.getHtml();
+    document.getElementById('app').innerHTML = html;
+
+    // 装载样式
+    let style = document.getElementById('current-view-style');
+    if (!style) {
+        style = document.createElement('link');
+        style.type = 'text/css';
+        style.rel = 'stylesheet';
+        document.head.appendChild(style);
+    }
+    style.href = view.stylePath();
+
+    // 绑定交互逻辑
+    view.setupLogic();
 }
 
 function navigateTo(url) {

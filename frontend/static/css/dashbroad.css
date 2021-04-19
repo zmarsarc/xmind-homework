@@ -1,0 +1,46 @@
+.dashbroad-container {
+    box-sizing: border-box;
+    width: 98%;
+    margin: 0px 1%;
+}
+
+.ledger {
+    border-collapse: collapse;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.ledger th,
+.ledger td {
+    border: 1px solid #000;
+}
+
+.ledger-header {
+    background: grey;
+    height: 24px;
+}
+
+.input-counter, .output-counter, .button-group {
+    display: inline-block;
+}
+
+.input-counter label, .output-counter label {
+    font-size: 36px;
+    font-weight: 500;
+}
+
+#input-value, #output-value {
+    font-size: 72px;
+    font-weight: 800;
+}
+
+.dashbroad-container .overview {
+    position: relative;
+}
+
+.overview .button-group {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
