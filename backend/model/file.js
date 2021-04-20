@@ -12,12 +12,10 @@ module.exports = class {
 
     async saveItem(userid, item) {
         // check file exists
-        try {
-            await fs.access(this.root, F_OK);
-        }
-        catch {
-            await fs.mkdir(this.root);
-        }
+    
+        await fs.access(this.root, F_OK)
+        .then(() => {})
+        .catch(() => { return fs.mkdir(this.root); })
 
         const filepath = path.join(this.root, 'ledger.json')
         let ledger = {}

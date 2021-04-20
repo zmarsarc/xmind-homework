@@ -28,15 +28,18 @@ module.exports = {
                 return;
             }
 
-            const request = ctx.request.body;
-            if (!request) {
+            ctx.checkBody('time').notEmpty().isInt();
+            ctx.checkBody('input').notEmpty().isInt().isIn([0, 1]);
+            ctx.checkBody('type').notEmpty();
+            ctx.checkBody('amount').notEmpty().isFloat();
+            if (ctx.errors) {
                 ctx.logger.error(`invalid params when add ledger item to user ${ctx.user.name}`);
                 ctx.body = resp.invalidParams;
                 return;
             }
 
             try {
-                await saveItem(ctx.user.id, request);
+                await saveItem(ctx.user.id, ctx.request.body);
                 ctx.body = resp.ok;
                 return;
             }
