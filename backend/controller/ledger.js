@@ -1,3 +1,4 @@
+const { timers } = require('@sinonjs/fake-timers');
 const resp = require('./response.js');
 
 module.exports = {
@@ -47,6 +48,35 @@ module.exports = {
                 ctx.logger.error(`save ledger item of user ${ctx.user.name}, error is ${err.message}`);
                 ctx.body = resp.internalError;
                 return;
+            }
+        }
+    },
+
+    getItemsInMonth: (readItem) => {
+
+        // router: /api/ledger/item/month/:month
+        return async(ctx, next) => {
+            if (!ctx.user) {
+                ctx.logger.error('try get legder items but no auth, need login');
+                ctx.body = resp.noAuth;
+                return;
+            }
+
+            const month = Number(ctx.params.month);
+            if (!month) {
+                ctx.logger.error('invalid url path, can not get month');
+                ctx.body = resp.invalidParams;
+                return;
+            }
+
+            try {
+                ctx.logger.debug(`read ledger items of ${ctx.user.name} in month ${month}`);
+                const items = await readItem(ctx.user.id, month);
+                ctx.body = resp.json(items);
+            }
+            catch (err) {
+                ctx.logger.error(`read ledger items of ${ctx.user.name} in month ${month} error, ${err.message}`);
+                ctx.body = resp.internalError;
             }
         }
     }
