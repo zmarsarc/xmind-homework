@@ -9,6 +9,9 @@ module.exports = function() {
 
     const app = new koa();
 
+    // 输入参数检查
+    require('koa-validate')(app);
+
     // 日志记录器绑定到全局上下文
     app.context.logger = log4js.getLogger();
     app.context.logger.level = 'debug'
