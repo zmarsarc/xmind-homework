@@ -1,4 +1,3 @@
-const { timers } = require('@sinonjs/fake-timers');
 const resp = require('./response.js');
 
 module.exports = {
@@ -23,12 +22,6 @@ module.exports = {
         //      code [number]: 错误码，成功为0，否则非0
         //      msg [string]: 错误提示信息
         return async(ctx, next) => {
-            if (!ctx.user) {
-                ctx.logger.error('try add ledger item but no auth, need login.');
-                ctx.body = resp.noAuth;
-                return;
-            }
-
             ctx.checkBody('time').notEmpty().isInt();
             ctx.checkBody('input').notEmpty().isInt().isIn([0, 1]);
             ctx.checkBody('type').notEmpty();
@@ -56,12 +49,6 @@ module.exports = {
 
         // router: /api/ledger/item/month/:month
         return async(ctx, next) => {
-            if (!ctx.user) {
-                ctx.logger.error('try get legder items but no auth, need login');
-                ctx.body = resp.noAuth;
-                return;
-            }
-
             const month = Number(ctx.params.month);
             if (!month) {
                 ctx.logger.error('invalid url path, can not get month');
@@ -77,6 +64,39 @@ module.exports = {
             catch (err) {
                 ctx.logger.error(`read ledger items of ${ctx.user.name} in month ${month} error, ${err.message}`);
                 ctx.body = resp.internalError;
+            }
+        }
+    },
+
+    // 添加账目类目，传入参数saveCategory是一个具有 async function(number, json{"type": , "name":}) 签名的方法
+    // saveCategory作为将类目数据写入持久化存储的代理
+    //
+    // router: POST /api/category
+    // body: json {"type": [int], "name": [string]}
+    //      type: 类型，出账或是入账，可选值[0,1]
+    //      name: 名称，有 unique(userid, type, name) 的限制
+    // response: json {"code": 0, "msg": "ok", "data"; {"id": "abcdef1234"}}
+    //      返回最新创建的category的id给前端
+    addCatagory: (saveCategory) => {
+        return async (ctx, next) => {
+            ctx.checkBody('type').notEmpty().isInt().isIn([0, 1]);
+            ctx.checkBody('name').notEmpty();
+            if (ctx.errors) {
+                ctx.logger.error(`invalid params when add category to user ${ctx.user.name}`);
+                ctx.body = resp.invalidParams;
+                return await next();
+            }
+
+            try {
+                const id = await saveCategory(ctx.user.id, ctx.request.body);
+                ctx.logger.debug(`user ${ctx.user.name} add new category ${ctx.request.body.name}, id ${id}`);
+                ctx.body = resp.json({id: id});
+                return await next();
+            }
+            catch (err) {
+                ctx.logger.error(`user ${ctx.user.name} add category error: ${err.message}`);
+                ctx.body = resp.internalError;
+                return await next();
             }
         }
     }

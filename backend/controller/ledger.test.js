@@ -7,8 +7,9 @@ const expect = require('chai').expect;
 const resp = require('./response.js');
 
 class TestServerMaker {
-    constructor() {
-        this.servers = []
+    constructor(fakeUser) {
+        this.servers = [];
+        this.fakeUser = fakeUser;
     }
 
     new(router) {
@@ -16,6 +17,7 @@ class TestServerMaker {
         require('koa-validate')(app);
         app.context.logger = require('log4js').getLogger();
         app.use(require('koa-body')());
+        app.use(fakeLogin(this.fakeUser.id, this.fakeUser.name))
         app.use(router);
         
         const server = app.listen();
@@ -38,37 +40,22 @@ function fakeLogin(userid, username) {
 }
 
 describe('test save ledger item', function() {
-    const testServer = new TestServerMaker();
-    const fakeUserId = 1
-    const fakeUserName = 'admin';
+    const fakeUser = {id: 1, name: 'admin'};
+    const testServer = new TestServerMaker(fakeUser);
     const apiPath = '/ledger/item';
 
     after(() => { testServer.closeAll() })
 
-    const prepareRouter = (middleware) => {
+    const prepareRouter = () => {
         const backend = sinon.fake();
         const router = new koaRouter();
-        if (middleware) {
-            router.use(middleware);
-        }
         router.post(apiPath, ledger.addItem(backend));
 
         return {backend: backend, router: router};
     }
 
-    it('should login before save ledger item', function(done) {
-        const env = prepareRouter();
-
-        request(testServer.new(env.router.routes())).post(apiPath).expect(200).then(res => {
-            expect(res.body.code).to.equal(resp.noAuth.code);
-            expect(env.backend.notCalled).to.be.true;
-            done();
-        })
-        .catch(done);
-    })
-
     it('should check params before call backend', function(done) {
-        const env = prepareRouter(fakeLogin(fakeUserId, fakeUserName));
+        const env = prepareRouter();
 
         request(testServer.new(env.router.routes())).post(apiPath).then(res => {
             expect(res.body.code).to.equal(resp.invalidParams.code);
@@ -79,7 +66,7 @@ describe('test save ledger item', function() {
     })
 
     it('call backend with user id and item', function(done) {
-        const env = prepareRouter(fakeLogin(fakeUserId, fakeUserName));
+        const env = prepareRouter();
 
         const requestData = {time: Date.now(), input: 0, type: '123456abcdef', amount: 100.00};
         request(testServer.new(env.router.routes())).post(apiPath)
@@ -96,38 +83,23 @@ describe('test save ledger item', function() {
 })
 
 describe('test get ledger item by month', function() {
-    const serverMaker = new TestServerMaker();
-    const fakeUserId = 1;
-    const fakeUserName = 'admin';
+    const fakeUser = {id: 1, name: 'admin'}
+    const serverMaker = new TestServerMaker(fakeUser);
     const apiPath = '/ledger/item/month/:month';
     const testData = {name: 'abc'};
 
     after(() => { serverMaker.closeAll(); })
 
-    const prepareRouter = (middleware) => {
+    const prepareRouter = () => {
         const backend = sinon.fake.resolves(testData);
         const router = new koaRouter();
-        if (middleware) {
-            router.use(middleware);
-        }
         router.get(apiPath, ledger.getItemsInMonth(backend));
 
         return {backendStub: backend, router: router};
     }
 
-    it('need login', function(done) {
-        const testEnv = prepareRouter();
-
-        request(serverMaker.new(testEnv.router.routes())).get('/ledger/item/month/3')
-        .then(res => {
-            expect(res.body.code).to.equal(resp.noAuth.code);
-            done();
-        })
-        .catch(done)
-    })
-
     it('should not match url', function(done) {
-        const testEnv = prepareRouter(fakeLogin(fakeUserId, fakeUserName));
+        const testEnv = prepareRouter();
         
         request(serverMaker.new(testEnv.router.routes()))
         .get('/ledger/item/month')
@@ -135,7 +107,7 @@ describe('test get ledger item by month', function() {
     })
 
     it('should check url params', function(done) {
-        const env = prepareRouter(fakeLogin(fakeUserId, fakeUserName));
+        const env = prepareRouter();
         request(serverMaker.new(env.router.routes()))
         .get('/ledger/item/month/abc')
         .then(res => {
@@ -146,17 +118,110 @@ describe('test get ledger item by month', function() {
     })
 
     it('if ok, should call backend to get item', function(done) {
-        const env = prepareRouter(fakeLogin(fakeUserId, fakeUserName));
+        const env = prepareRouter();
         request(serverMaker.new(env.router.routes()))
         .get('/ledger/item/month/3')
         .then(res => {
             expect(res.body.code).to.equal(resp.ok.code);
             expect(res.body.data).to.deep.equal(testData);
             expect(env.backendStub.calledOnce).to.be.true;
-            expect(env.backendStub.firstCall.firstArg).to.equal(fakeUserId);
+            expect(env.backendStub.firstCall.firstArg).to.equal(fakeUser.id);
             expect(env.backendStub.firstCall.lastArg).to.equal(3);
             done();
         })
         .catch(done);
+    })
+})
+
+describe('test category accesss', function() {
+    const fakeUser = {id: 1, name: 'admin'}
+    const envMaker = new TestServerMaker(fakeUser);
+    const testPath = '/api/category';
+
+    after(function() {
+        envMaker.closeAll();
+    })
+
+    beforeEach(function() {
+        const router = new koaRouter();
+        const backend = sinon.fake();
+        this.backend = backend;
+        router.post(testPath, ledger.addCatagory(backend));
+        this.server = envMaker.new(router.routes());
+    })
+    
+    const sendRequest = (server, body) => {
+        return request(server).post(testPath).send(body);
+    }
+
+    describe('should check input params', function() {
+       
+        describe('should check type value', function() {
+            it('should have value', function(done) {
+                sendRequest(this.server, {'name': 'abcdefg'}).then(res => {
+                    expect(res.body.code).to.equal(resp.invalidParams.code);
+                    done();
+                })
+                .catch(done)
+            })
+            it('should falied value excceed', function(done) {
+                sendRequest(this.server, {name: 'abcd', type: 1000}).then(res => {
+                    expect(res.body.code).to.equal(resp.invalidParams.code);
+                    done();
+                })
+                .catch(done);
+            })
+            it('should ok', function(done) {
+                sendRequest(this.server, {name: "abc", type: 1}).then(res => {
+                    expect(res.body.code).to.equal(resp.ok.code);
+                    done();
+                })
+                .catch(done);
+            })
+        })
+
+        describe('should check name', function() {
+            it('should have name', function(done) {
+                sendRequest(this.server, {type: 0}).then(res => {
+                    expect(res.body.code).to.equal(resp.invalidParams.code);
+                    done();
+                })
+                .catch(done);
+            })
+            it('should ok', function(done) {
+                sendRequest(this.server, {type: 0, name: 'aaaa'}).then(res => {
+                    expect(res.body.code).to.equal(resp.ok.code);
+                    done();
+                })
+                .catch(done);
+            })
+        })
+    })
+    describe('should write to backend if ok', function() {
+        it('should call only once and have right params', function(done) {
+            const fakeCategory = {type: 0, name: 'abc'}
+            sendRequest(this.server, fakeCategory).then(res => {
+                expect(this.backend.calledOnce).to.be.true;
+                expect(this.backend.firstCall.firstArg).to.equal(fakeUser.id);
+                expect(this.backend.firstCall.lastArg).to.deep.equal(fakeCategory);
+                expect(res.body.code).to.equal(resp.ok.code);
+                done();
+            })
+            .catch(done);
+        })
+    })
+    describe('should report error when backend error', function() {
+        it('return internal error', function(done) {
+            const errorBackend = sinon.fake.throws(new Error('some error'));
+            const router = new koaRouter();
+            router.post(testPath, ledger.addCatagory(errorBackend));
+            const server = envMaker.new(router.routes());
+
+            request(server).post(testPath).send({type: 0, name: 'aaa'}).then(res => {
+                expect(res.body.code).to.equal(resp.internalError.code);
+                done();
+            })
+            .catch(done);
+        })
     })
 })
