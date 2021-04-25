@@ -32,16 +32,9 @@ module.exports = {
                 return;
             }
 
-            try {
-                await saveItem(ctx.user.id, ctx.request.body);
-                ctx.body = resp.ok;
-                return;
-            }
-            catch (err) {
-                ctx.logger.error(`save ledger item of user ${ctx.user.name}, error is ${err.message}`);
-                ctx.body = resp.internalError;
-                return;
-            }
+            await saveItem(ctx.user.id, ctx.request.body);
+            ctx.body = resp.ok;
+            return;
         }
     },
 
@@ -56,15 +49,9 @@ module.exports = {
                 return;
             }
 
-            try {
-                ctx.logger.debug(`read ledger items of ${ctx.user.name} in month ${month}`);
-                const items = await readItem(ctx.user.id, month);
-                ctx.body = resp.json(items);
-            }
-            catch (err) {
-                ctx.logger.error(`read ledger items of ${ctx.user.name} in month ${month} error, ${err.message}`);
-                ctx.body = resp.internalError;
-            }
+            ctx.logger.debug(`read ledger items of ${ctx.user.name} in month ${month}`);
+            const items = await readItem(ctx.user.id, month);
+            ctx.body = resp.json(items);
         }
     },
 
@@ -87,17 +74,10 @@ module.exports = {
                 return await next();
             }
 
-            try {
-                const id = await saveCategory(ctx.user.id, ctx.request.body);
-                ctx.logger.debug(`user ${ctx.user.name} add new category ${ctx.request.body.name}, id ${id}`);
-                ctx.body = resp.json({id: id});
-                return await next();
-            }
-            catch (err) {
-                ctx.logger.error(`user ${ctx.user.name} add category error: ${err.message}`);
-                ctx.body = resp.internalError;
-                return await next();
-            }
+            const id = await saveCategory(ctx.user.id, ctx.request.body);
+            ctx.logger.debug(`user ${ctx.user.name} add new category ${ctx.request.body.name}, id ${id}`);
+            ctx.body = resp.json({id: id});
+            return await next();
         }
     }
 }

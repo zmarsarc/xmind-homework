@@ -210,18 +210,4 @@ describe('test category accesss', function() {
             .catch(done);
         })
     })
-    describe('should report error when backend error', function() {
-        it('return internal error', function(done) {
-            const errorBackend = sinon.fake.throws(new Error('some error'));
-            const router = new koaRouter();
-            router.post(testPath, ledger.addCatagory(errorBackend));
-            const server = envMaker.new(router.routes());
-
-            request(server).post(testPath).send({type: 0, name: 'aaa'}).then(res => {
-                expect(res.body.code).to.equal(resp.internalError.code);
-                done();
-            })
-            .catch(done);
-        })
-    })
 })
