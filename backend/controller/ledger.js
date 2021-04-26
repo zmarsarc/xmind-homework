@@ -88,7 +88,7 @@ module.exports = {
     // response: json {"code": 0, "msg": "ok", "data": []}
     getCategory: (readCategory) => {
         return async(ctx, next) => {
-            ctx.logger.debut(`user ${ctx.user.name} get category`);
+            ctx.logger.debug(`user ${ctx.user.name} get category`);
             ctx.body = resp.json(await readCategory(ctx.user.id));
             return await next();
         }
