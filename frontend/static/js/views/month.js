@@ -10,11 +10,7 @@ export default class extends AbstractView {
     }
 
     async show() {
-        const resp = await fetch(this.htmlPath);
-        if (!resp.ok) {
-            throw new error.RequestError(resp.status);
-        }
-        this.root.innerHTML = await resp.text();
+        this.root.innerHTML = await this.getHtml(this.htmlPath)
         this.style = this.stylePath;
         await this.setup();
     }

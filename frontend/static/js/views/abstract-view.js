@@ -15,4 +15,12 @@ export default class {
         }
         style.href = path;
     }
+
+    async getHtml(url) {
+        const resp = await fetch(url);
+        if (!resp.ok) {
+            throw new error.RequestError(resp.status);
+        }
+        return resp.text();
+    }
 }
