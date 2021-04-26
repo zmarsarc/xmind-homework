@@ -1,3 +1,5 @@
+// 前端开发约定参看 /docs/前端开发约定.md
+
 import Dashbroad from './views/dashbroad.js'
 import Month from './views/month.js'
 import AddOne from './views/addone.js'
