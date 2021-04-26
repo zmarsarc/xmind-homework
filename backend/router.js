@@ -1,9 +1,10 @@
 const koaRouter = require('koa-router');
 const ledger = require('./controller/ledger.js');
-const file = require('./model/file.js');
+const sqlite = require('./model/sqlite.js');
 const body = require('koa-body');
+const resp = require('./controller/response.js');
 
-const fileBackend = new file('./data');
+const backend = new sqlite({database: 'data.db'});
 
 const apiRouter = new koaRouter();
 
@@ -18,6 +19,16 @@ apiRouter.use(async(ctx, next) => {
 
 apiRouter.use(body());
 
+apiRouter.use(async(ctx, next) => {
+    try {
+        await next();
+    }
+    catch (err) {
+        ctx.logger.error(`${ctx.request.method} ${ctx.request.path} error, ${err.message}`)
+        ctx.body = resp.internalError;
+    }
+})
+
 // api接口默认返回的是json数据
 apiRouter.use(async(ctx, next) => {
     ctx.type = 'json';
@@ -25,6 +36,8 @@ apiRouter.use(async(ctx, next) => {
 })
 
 apiRouter.prefix('/api');
-apiRouter.post('/ledger/item', ledger.addItem(fileBackend.saveItem));
+apiRouter.post('/ledger/item', ledger.addItem(backend.saveItem));
+apiRouter.get('/ledger/item/month/:month', ledger.getItemsInMonth((userid, month) => { return backend.getItem({userId: userid, month: month})}))
+apiRouter.post('/category', ledger.addCatagory((userid, category) => { return backend.saveCategory(userid, category)}));
 
 module.exports = apiRouter;

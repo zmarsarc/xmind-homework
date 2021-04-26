@@ -1,55 +1,66 @@
 // 前端开发约定参看 /docs/前端开发约定.md
 
-import Dashbroad from './views/dashbroad.js'
-import Month from './views/month.js'
-import AddOne from './views/addone.js'
+import Dashbroad from './views/dashbroad.js';
+import Month from './views/month.js';
+import AddOne from './views/addone.js';
 
-const routers = [
-    {path: "/dashbroad", view: Dashbroad},
-    {path: "/month", view: Month}
-]
+const navigateTo = url => {
+    history.pushState(null, null, url);
+    route();
+};
 
-async function route() {
+const relocatedTo = url => {
+    history.replaceState(null, null, url);
+    route();
+};
+
+const pathToRegexp = path => new RegExp("^" + path.replace(/\//g, "\\/").replace(/:\w+/g, "(.+)") + "$");
+
+const getParams = match => {
+    const values = match.result.slice(1);
+    const keys = Array.from(match.router.path.matchAll(/:(\w+)/g)).map(result => result[1]);
+    return Object.fromEntries(keys.map((key, i) => {
+        return [key, values[i]];
+    }));
+};
+
+const route = async() => {
+    const routers = [
+        {path: "/dashbroad", view: Dashbroad},
+        {path: "/month/:month", view: Month},
+        {path: "/month", view: function() {
+            // fake view, just redirect to current month
+            this.show = () => {
+                const url = "/month/" + String(new Date().getMonth() + 1);
+                relocatedTo(url);
+            }
+        }}
+    ];
+    
     const protentialMatches = routers.map(r => {
         return {
             router: r,
-            isMatch: r.path === location.pathname
+            result: location.pathname.match(pathToRegexp(r.path))
         }
     })
 
-    let matched = protentialMatches.find(r => r.isMatch)
+    let matched = protentialMatches.find(r => r.result !== null)
     if (!matched) {
         matched = {
             router: routers[0],
-            isMatch: true
+            result: []
         }
     }
 
-    const view = new matched.router.view();
+    const view = new matched.router.view(getParams(matched));
 
-    // 加载视图
-    const html = await view.getHtml();
-    document.getElementById('app').innerHTML = html;
-
-    // 装载样式
-    let style = document.getElementById('current-view-style');
-    if (!style) {
-        style = document.createElement('link');
-        style.type = 'text/css';
-        style.rel = 'stylesheet';
-        style.id = 'current-view-style';
-        document.head.appendChild(style);
+    try {
+        await view.show();
     }
-    style.href = view.stylePath();
-
-    // 绑定交互逻辑
-    view.setupLogic();
-}
-
-function navigateTo(url) {
-    history.pushState(null, null, url);
-    route();
-}
+    catch (err) {
+        console.log(err.message); // @todo: error handle
+    }
+};
 
 window.addEventListener("popstate", route);
 
@@ -80,4 +91,4 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 
     route();
-})
+});

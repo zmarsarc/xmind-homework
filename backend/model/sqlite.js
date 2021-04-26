@@ -97,13 +97,19 @@ module.exports = class {
     }
 
     async getItem(filter) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const sql = `select id, user_id as userId, event_time as eventTime, write_time as writeTime, type, category, amount
             from ledger`
             if (filter.id) {
                 const querySql = sql + ' where id = ?';
                 resolve(this.db.prepare(querySql).get(filter.id));
             }
+            if (filter.userId) {
+                const querySql = sql + ' where user_id = ?';
+                resolve(this.db.prepare(querySql).all(filter.userId));
+                // @todo: filter by month
+            }
+            reject(new Error("no user id or ledger item id specified."))
         })
     }
 

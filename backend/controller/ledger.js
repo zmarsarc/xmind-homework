@@ -41,6 +41,7 @@ module.exports = {
     getItemsInMonth: (readItem) => {
 
         // router: /api/ledger/item/month/:month
+        // response: json {"code": 0, "msg": "ok", "data": [{"id": 1, "userId": 1, "eventTime": , "writeTime": , "type": , "category": , "amount": }]}
         return async(ctx, next) => {
             const month = Number(ctx.params.month);
             if (!month) {

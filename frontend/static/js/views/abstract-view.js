@@ -1,21 +1,18 @@
 export default class {
-    constructor() {}
-
-    async getHtml() {
-        return ''
+    constructor() {
+        this.root = document.getElementById('app');
     }
 
-    stylePath() {
-        return ''
-    }
-
-    setupLogic() {}
-
-    async requestHtml(url) {
-        const resp = await fetch(url);
-        if (!resp.ok) {
-            throw new Error(`request ${url} not ok`);
+    set style(path) {
+        const styleNodeId = 'view-style';
+        let style = document.getElementById(styleNodeId);
+        if (!style) {
+            style = document.createElement('link');
+            style.id = styleNodeId;
+            style.type = 'text/css';
+            style.rel = 'stylesheet';
+            document.head.appendChild(style);
         }
-        return resp.text();
+        style.href = path;
     }
 }
