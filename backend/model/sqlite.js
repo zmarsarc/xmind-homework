@@ -126,14 +126,17 @@ module.exports = class {
     }
 
     async getCategory(filter) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
+            const sql = `select id, user_id as userId, write_time as writeTime, type, name from category`
             if (filter.id) {
-                const sql = `
-                select id, user_id as userId, write_time as writeTime, type, name 
-                from category 
-                where id = ?`
-                resolve(this.db.prepare(sql).get(filter.id));
+                const querySql = sql + ' where id = ?'
+                resolve(this.db.prepare(querySql).get(filter.id));
             }
+            if (filter.userId) {
+                const querySql = sql + ' where user_id = ?';
+                resolve(this.db.prepare(querySql).all(filter.userId));
+            }
+            reject(new Error('no category id or user id specified.'));
         })
     }
 }
