@@ -29,12 +29,20 @@ export default class extends AbstractView {
         if (data.code !== 0) {
             throw new error.ApiError(data.code, data.msg);
         }
+
+        const categoryResp = await fetch('/api/category');
+        if (!categoryResp.ok) {
+            throw new error.RequestError(resp.status);
+        }
+        const category = Object.fromEntries((await categoryResp.json()).data.map(c => {
+            return [c.id, c.name]
+        }));
+
         const listBody = document.getElementById('ledger-month-list-body');
         for (let item of data.data) {
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${item.eventTime}</td><td>${item.type}</td><td>${item.category}</td><td>${item.amount}</td>`
+            row.innerHTML = `<td>${new Date(item.eventTime).toLocaleString()}</td><td>${item.type}</td><td>${category[item.category]}</td><td>${item.amount}</td>`
             listBody.appendChild(row);
         }
-        // @todo: 需要正则路由支持
     }
 }
