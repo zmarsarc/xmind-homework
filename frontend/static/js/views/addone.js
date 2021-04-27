@@ -1,20 +1,24 @@
-import AbstractView from './abstract-view.js';
+import AbstractDialog from './abstract-dialog.js';
+import DateTimePicker from '../components/date-time-picker.js';
 
-export default class extends AbstractView {
+export default class extends AbstractDialog {
     constructor() {
         super();
+        this.htmlPath = '/static/html/addone.html';
+        this.stylePath = '/static/css/addone.css';
+
+        this.dateTimePicker = new DateTimePicker();
     }
 
-    getHtml() {
-        const url = '/static/html/addone.html';
-        return this.requestHtml(url);
+    async show() {
+        this.root.innerHTML = await this.getHtml(this.htmlPath);
+        this.style = this.stylePath;
+        await this.setup();
     }
 
-    stylePath() {
-        return '/static/css/addone.css';
-    }
+    async setup() {
+        await this.dateTimePicker.install('datepicker');
 
-    setupLogic() {
         document.getElementById('close-add-item-dialog-button').addEventListener('click', function() {
             document.getElementById('dialog').innerHTML = '';
             document.getElementById('dialog-style').remove();

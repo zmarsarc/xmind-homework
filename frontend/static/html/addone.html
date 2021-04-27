@@ -1,16 +1,18 @@
 <div class="add-item-dialog-mask">
-    <div class="add-item-dialog">
-        <input type="datetime-local" id='ledger-item-time'>
-        <div>
-            <input type="radio" name="input" value="1">input
-            <input type="radio" name="input" value="0">output
+    <div class="add-item-container">
+        <div class="add-item-content">
+            <div id="datepicker"></div>
+            <div>
+                <label><input type="radio" name="input" value="1">input</label>
+                <label><input type="radio" name="input" value="0">output</label>
+            </div>
+            <select name="type" id="type-selector">
+                <option value="aaa">aaa</option>
+                <option value="bbb">bbb</option>
+            </select>
+            <input type="number" name="amount" id="amount">
+            <button id="ok-button">ok</button>
+            <button id="close-add-item-dialog-button">cancel</button>
         </div>
-        <select name="type" id="type-selector">
-            <option value="aaa">aaa</option>
-            <option value="bbb">bbb</option>
-        </select>
-        <input type="number" name="amount" id="amount">
-        <button id="ok-button">ok</button>
-        <button id="close-add-item-dialog-button">cancel</button>
     </div>
 </div>

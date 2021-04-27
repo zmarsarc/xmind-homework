@@ -7,14 +7,18 @@
     background-color: rgba(0, 0, 0, 0.7);
 }
 
-.add-item-dialog {
+.add-item-container {
     position: absolute;
-    height: 200px;
-    width: 200px;
+    height: 400px;
+    width: 300px;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
     margin: auto;
     background-color: #FFF;
+}
+
+.add-item-content {
+    margin: 15px 30px;
 }

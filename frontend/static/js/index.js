@@ -67,21 +67,8 @@ window.addEventListener("popstate", route);
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('add-one-button').addEventListener('click', function() {
         const view = new AddOne();
-        view.getHtml().then(text => {
-            document.getElementById('dialog').innerHTML = text;
-            const style = document.createElement('link');
-            style.type = 'text/css';
-            style.rel = 'stylesheet';
-            style.href = view.stylePath();
-            style.id = 'dialog-style';
-            document.head.appendChild(style);
-            view.setupLogic();
-        })
-        .catch(err => {
-            alert(err.message);
-        })
+        view.show();
     })
-
 
     document.body.addEventListener("click", e => {
         if (e.target.matches("[data-link]")) {
