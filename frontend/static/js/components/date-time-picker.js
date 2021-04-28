@@ -1,19 +1,16 @@
 // a great thanks to https://www.youtube.com/watch?v=wY2dao1hJms and https://www.youtube.com/watch?v=Vt1K8EZ2Aag
 // 我将这两个组件结合在了一起并将逻辑封装到一个类中
-import error from "../errors.js";
+import AbstractComponent from './abstract-component.js';
 
-export default class {
+export default class extends AbstractComponent {
     constructor() {
+        super();
         this.htmlPath = '/static/html/datepicker.html';
         this.currentDate = new Date();
     }
 
     async install(parent) {
-        const resp = await fetch(this.htmlPath);
-        if (!resp.ok) {
-            throw new error.RequestError(resp.status);
-        }
-        document.getElementById(parent).innerHTML = await resp.text();
+        document.getElementById(parent).innerHTML = await this.getHtml(this.htmlPath);
 
         this.setup();
         this.updateDateTime(this.currentDate);
