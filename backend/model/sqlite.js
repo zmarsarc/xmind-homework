@@ -133,8 +133,11 @@ module.exports = class {
                 resolve(this.db.prepare(querySql).get(filter.id));
             }
             if (filter.userId) {
-                const querySql = sql + ' where user_id = ?';
-                resolve(this.db.prepare(querySql).all(filter.userId));
+                let querySql = sql + ' where user_id = @userId';
+                if (filter.type) {
+                    querySql += ` and type = @type`
+                }
+                resolve(this.db.prepare(querySql).all(filter));
             }
             reject(new Error('no category id or user id specified.'));
         })

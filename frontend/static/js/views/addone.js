@@ -1,5 +1,6 @@
 import AbstractDialog from './abstract-dialog.js';
 import DateTimePicker from '../components/date-time-picker.js';
+import CategorySelector from '../components/category-selector.js';
 
 export default class extends AbstractDialog {
     constructor() {
@@ -8,6 +9,7 @@ export default class extends AbstractDialog {
         this.stylePath = '/static/css/addone.css';
 
         this.dateTimePicker = new DateTimePicker();
+        this.categorySelector = new CategorySelector();
     }
 
     async show() {
@@ -18,6 +20,7 @@ export default class extends AbstractDialog {
 
     async setup() {
         await this.dateTimePicker.install('datepicker');
+        await this.categorySelector.install('categoryselector');
 
         document.getElementById('close-add-item-dialog-button').addEventListener('click', function() {
             document.getElementById('dialog').innerHTML = '';

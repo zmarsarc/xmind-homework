@@ -1,0 +1,88 @@
+.category-selector {
+    position: relative;
+}
+
+.category-selector .selected-category {
+    padding: 20px;
+    font-size: 20px;
+    box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    user-select: none;
+    cursor: pointer;
+}
+
+.category-selector .selected-category:hover {
+    background-color: #EEE;
+}
+
+.category-selector .selected-category:active {
+    background-color: rgb(36, 202, 138);
+}
+
+.category-selector .selector-container {
+    display: none;
+}
+
+.category-selector .selector-container.active {
+    display: block;
+    position: absolute;
+    z-index: 1;
+}
+
+.category-selector .selector-container .types {
+    display: flex;
+}
+
+.category-selector .selector-container .types .type {
+    padding: 20px;
+    font-size: 24px;
+    background-color: #EEE;
+    cursor: pointer;
+    user-select: none;
+}
+
+.category-selector .selector-container .types .type:hover {
+    background-color: #AAA;
+}
+
+.category-selector .selector-container .types .type:active {
+    background-color: rgb(36, 202, 138);
+}
+
+.category-selector .selector-container .categories {
+    display: grid;
+    position: absolute;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.category-selector .selector-container .categories .category {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+    font-size: 24px;
+    background-color: #EEE;
+    white-space: nowrap;
+
+    user-select: none;
+    cursor: pointer;
+}
+
+.category-selector .selector-container .categories .category:hover {
+    background-color: #AAA;
+}
+
+.category-selector .selector-container .categories .category:active {
+    background-color: rgb(36, 202, 138);
+}
+
+.category-selector .selector-container .categories .new-category-input {
+    font-size: 24px;
+    outline: none;
+    width: 6em;
+}

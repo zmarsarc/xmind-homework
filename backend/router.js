@@ -40,5 +40,6 @@ apiRouter.post('/ledger/item', ledger.addItem(backend.saveItem));
 apiRouter.get('/ledger/item/month/:month', ledger.getItemsInMonth((userid, month) => { return backend.getItem({userId: userid, month: month})}))
 apiRouter.post('/category', ledger.addCatagory((userid, category) => { return backend.saveCategory(userid, category)}));
 apiRouter.get('/category', ledger.getCategory((userid) => { return backend.getCategory({userId: userid})}));
+apiRouter.get('/category/type/:typeid', ledger.getCategoryByType((userid, typeid) => { return backend.getCategory({userId: userid, type: typeid})}));
 
 module.exports = apiRouter;

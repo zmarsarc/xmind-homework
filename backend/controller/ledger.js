@@ -92,5 +92,17 @@ module.exports = {
             ctx.body = resp.json(await readCategory(ctx.user.id));
             return await next();
         }
+    },
+
+    // 按类型获取账目类目
+    //
+    // router: GET /api/cagetory/type/:typeid
+    // response: json {"code": 0, "msg": "ok", "data": [object]}
+    getCategoryByType: (readCategory) => {
+        return async(ctx, next) => {
+            ctx.logger.debug(`user ${ctx.user.name} get category with type ${ctx.params.typeid}`);
+            ctx.body = resp.json(await readCategory(ctx.user.id, ctx.params.typeid));
+            return await next();
+        }
     }
 }
