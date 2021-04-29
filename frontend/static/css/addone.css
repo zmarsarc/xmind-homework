@@ -22,3 +22,53 @@
 .add-item-content {
     margin: 15px 30px;
 }
+
+.add-item-content .amount-input {
+    margin: 15px 0px;
+    padding: 20px 0px;
+    font-size: 24px;
+    width: 100%;
+    outline: none;
+    text-align: center;
+    border: none;
+    box-shadow: 1px 1px 15px rgba(0, 0, 0, 0.2);
+}
+
+.add-item-content .amount-input:hover {
+    background-color: #EEE;
+}
+
+.add-item-content .amount-input::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
+.add-item-content .add-item-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 20px;
+    margin: 5px 0px;
+    outline: none;
+    border: none;
+}
+
+.add-item-content .add-item-button.ok {
+    background-color: #24a464;
+}
+.add-item-content .add-item-button.ok:hover {
+    background-color: #5cb17d;
+}
+.add-item-content .add-item-button.ok:active {
+    background-color: #059b4d;
+}
+
+.add-item-content .add-item-button.cancel {
+    background-color: #ff4949;
+}
+.add-item-content .add-item-button.cancel:hover {
+    background-color: #fc6666;
+}
+.add-item-content .add-item-button.cancel:active {
+    background-color: #ff3131;
+}
