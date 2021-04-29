@@ -1,6 +1,7 @@
 import AbstractDialog from './abstract-dialog.js';
 import DateTimePicker from '../components/date-time-picker.js';
 import CategorySelector from '../components/category-selector.js';
+import errors from '../errors.js';
 
 export default class extends AbstractDialog {
     constructor() {
@@ -19,49 +20,50 @@ export default class extends AbstractDialog {
     }
 
     async setup() {
+        this.amountElement = document.getElementById('amount');
+
         await this.dateTimePicker.install('datepicker');
         await this.categorySelector.install('categoryselector');
 
-        document.getElementById('close-add-item-dialog-button').addEventListener('click', function() {
-            document.getElementById('dialog').innerHTML = '';
-            document.getElementById('dialog-style').remove();
-        })
+        document.getElementById('close-add-item-dialog-button').addEventListener('click', () => this.close());
+        document.getElementById('ok-button').addEventListener('click', () => this.addLedgerItem());
+    }
 
-        document.getElementById('ok-button').addEventListener('click', function() {
-            const input = document.querySelector('input[name="input"]:checked').value;
-            const type = document.getElementById('type-selector').value;
-            const item = {
-                time: Date.parse(document.getElementById('ledger-item-time').value) / 1000,
-                input: Number(input),
-                type: type,
-                amount: document.getElementById('amount').value
+    close() {
+        document.getElementById('dialog').innerHTML = '';
+        document.getElementById('dialog-style').remove();
+    }
+
+    addLedgerItem() {
+        const time = this.dateTimePicker.value;
+        const category = this.categorySelector.category;
+        const amount = this.amountElement.value;
+        const body = {
+            time: time.getTime(),
+            input: category.type,
+            type: category.category,
+            amount: amount
+        }
+
+        fetch('/api/ledger/item', {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                'Content-type': 'application/json',
+                'Accept': 'application/json'
             }
-
-            fetch('/api/ledger/item', {
-                method: 'POST',
-                body: JSON.stringify(item),
-                headers: {
-                    'Content-type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(resp => {
-                if (!resp.ok) {
-                    throw new Error(resp.statusText);
-                }
-                return resp.json();
-            })
-            .then(data => {
-                if (data.code !== 0) {
-                    throw new Error(data.msg);
-                }
-                alert('add ok');
-                document.getElementById('dialog').innerHTML = '';
-                document.getElementById('dialog-style').remove();
-            })
-            .catch(err => {
-                alert(err.message);
-            })
         })
+        .then(resp => {
+            if (!resp.ok) {
+                throw new errors.RequestError(resp.status);
+            }
+            return resp.json();
+        })
+        .then(json => {
+            if (json.code !== 0) {
+                throw new errors.ApiError(json.code, json.msg);
+            }
+        })
+        .then(() => this.close())
     }
 }

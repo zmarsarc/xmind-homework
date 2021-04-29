@@ -92,7 +92,7 @@ module.exports = class {
             const sql = `
             insert into ledger(user_id, event_time, type, category, amount)
             values (?, ?, ?, ?, ?)`;
-            resolve(this.db.prepare(sql).run(userid, item.eventTime, item.type, item.category, item.amount).lastInsertRowid);
+            resolve(this.db.prepare(sql).run(userid, item.time, item.input, item.type, item.amount).lastInsertRowid);
         })
     }
 
