@@ -1,5 +1,8 @@
 .add-item-dialog-mask {
     position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     top: 0;
     bottom: 0;
     left: 0;
@@ -8,23 +11,16 @@
 }
 
 .add-item-container {
-    position: absolute;
-    height: 400px;
-    width: 300px;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    margin: auto;
+    padding: 25px 10px;
     background-color: #FFF;
 }
 
 .add-item-content {
-    margin: 15px 30px;
+    display: grid;
+    gap: 10px;
 }
 
 .add-item-content .amount-input {
-    margin: 15px 0px;
     padding: 20px 0px;
     font-size: 24px;
     width: 100%;
@@ -48,7 +44,6 @@
     width: 100%;
     padding: 10px;
     font-size: 20px;
-    margin: 5px 0px;
     outline: none;
     border: none;
 }
