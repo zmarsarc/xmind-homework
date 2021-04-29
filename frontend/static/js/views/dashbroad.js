@@ -1,20 +1,14 @@
-export default class {
-    constructor() {}
+import AbstraceView from './abstract-view.js';
 
-    async getHtml() {
-        const htmlPath = "/static/html/dashbroad.html";
-        const resp = await fetch(htmlPath);
-        if (!resp.ok) {
-            return "<main>there are some error when get html.</main>";
-        }
-        return resp.text();
-    }
-    
-    stylePath() {
-        return "/static/css/dashbroad.css"
+export default class extends AbstraceView{
+    constructor() {
+        super();
+        this.htmlPath = "/static/html/dashbroad.html";
+        this.stylePath = "/static/css/dashbroad.css";
     }
 
-    setupLogic() {
-        console.log("setup logic")
+    async show() {
+        this.root.innerHTML = await this.getHtml(this.htmlPath);
+        this.style = this.stylePath;
     }
 }
