@@ -64,6 +64,16 @@ export default class extends AbstractDialog {
                 throw new errors.ApiError(json.code, json.msg);
             }
         })
+        .then(() => {
+            this.sendAddEvent({ok: true});
+        })
+        .catch(e => {
+            this.sendAddEvent({ok: false, msg: e.message});
+        })
         .then(() => this.close())
+    }
+
+    sendAddEvent(detail) {
+        document.getElementById('dialog').dispatchEvent(new CustomEvent('add', {detail: detail}));
     }
 }

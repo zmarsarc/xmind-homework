@@ -4,6 +4,8 @@ import Dashbroad from './views/dashbroad.js';
 import Month from './views/month.js';
 import AddOne from './views/addone.js';
 
+let currentView = null;
+
 const navigateTo = url => {
     history.pushState(null, null, url);
     route();
@@ -53,6 +55,7 @@ const route = async() => {
     }
 
     const view = new matched.router.view(getParams(matched));
+    currentView = view;
 
     try {
         await view.show();
@@ -68,6 +71,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('add-one-button').addEventListener('click', function() {
         const view = new AddOne();
         view.show();
+    })
+
+    document.getElementById('dialog').addEventListener('add', e => {
+        if (e.detail.ok) {
+            currentView.update();
+        }
     })
 
     document.body.addEventListener("click", e => {

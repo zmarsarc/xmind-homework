@@ -17,27 +17,53 @@ export default class extends AbstractView {
 
     async setup() {
         // @todo: 获取当月的总览
+        let items, categories;
+        [items, categories] = await Promise.all([this.getLedgerList(), this.getCategories()]);
+        this.insertItemIntoTable(items, categories);
+    }
+
+    async update() {
+        let items, categories;
+        [items, categories] = await Promise.all([this.getLedgerList(), this.getCategories()]);
+        document.getElementById('ledger-month-list-body').innerHTML = '';
+        this.insertItemIntoTable(items, categories);
+    }
+
+    async getLedgerList() {
         const resp = await fetch('/api/ledger/item/month/' + this.month);
         if (!resp.ok) {
             throw new error.RequestError(resp.status);
         }
-        const data = await resp.json();
-        if (data.code !== 0) {
-            throw new error.ApiError(data.code, data.msg);
+        const json = await resp.json();
+        if (json.code !== 0) {
+            throw new error.ApiError(json.code, json.msg);
         }
+        return json.data;
+    }
 
-        const categoryResp = await fetch('/api/category');
-        if (!categoryResp.ok) {
+    async getCategories() {
+        const resp = await fetch('/api/category');
+        if (!resp.ok) {
             throw new error.RequestError(resp.status);
         }
-        const category = Object.fromEntries((await categoryResp.json()).data.map(c => {
+        const json = await resp.json();
+        if (json.code !== 0) {
+            throw new error.ApiError(json.code, json.msg);
+        }
+        return Object.fromEntries(json.data.map(c => {
             return [c.id, c.name]
         }));
+    }
 
+    insertItemIntoTable(items, categories) {
+        const typeName = {
+            0: '支出',
+            1: '收入'
+        }
         const listBody = document.getElementById('ledger-month-list-body');
-        for (let item of data.data) {
+        for (let i of items) {
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${new Date(item.eventTime).toLocaleString()}</td><td>${item.type}</td><td>${category[item.category]}</td><td>${item.amount}</td>`
+            row.innerHTML = `<td>${new Date(i.eventTime).toLocaleString()}</td><td>${typeName[i.type]}</td><td>${categories[i.category]}</td><td>${i.amount}</td>`
             listBody.appendChild(row);
         }
     }
