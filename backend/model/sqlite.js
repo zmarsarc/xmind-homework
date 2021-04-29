@@ -96,6 +96,7 @@ module.exports = class {
         })
     }
 
+    // field names: id, userId, eventTime, writeTime, type, category, amount
     async getItem(filter) {
         return new Promise((resolve, reject) => {
             const sql = `select id, user_id as userId, event_time as eventTime, write_time as writeTime, type, category, amount

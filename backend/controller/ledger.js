@@ -104,5 +104,34 @@ module.exports = {
             ctx.body = resp.json(await readCategory(ctx.user.id, ctx.params.typeid));
             return await next();
         }
+    },
+
+    // router: GET /api/overview
+    // router: GET /api/overview/month/:month
+    getOverview(readLedger) {
+        return async(ctx, next) => {
+            let items = []
+            if (ctx.params) {
+                items = await readLedger({userId: ctx.user.id, month: ctx.params.month});
+            } else {
+                items = await readLedger({userId: ctx.user.id});
+            }
+
+            let output = 0;
+            let input = 0;
+            for (let i of items) {
+                // output
+                if (i.type === 0) {
+                    output += i.amount;
+                }
+
+                // input
+                if (i.type === 1) {
+                    input += i.amount;
+                }
+            }
+
+            ctx.body = resp.json({output: output, input: input});
+        }
     }
 }
